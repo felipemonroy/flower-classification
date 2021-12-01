@@ -1,0 +1,47 @@
+@startuml
+
+abstract class Downloader {
+    + {abstract} void download()
+}
+
+abstract class HTMLDownloader {
+    - String url
+    - String destination
+    + void download()
+    + String path()
+}
+
+abstract class Extractor{
+    + {abstract} void extract()
+}
+
+class TGZExtractor{
+    - String path
+    - Bool keep
+    + void extract()
+}
+
+class DataGetter{
+    - Downloader downloader
+    - Extractor extractor
+    + void getdata()
+}
+
+note left of HTMLDownloader::download
+    download a file into a folder
+end note
+
+note right of TGZExtractor::extract
+    extract a zip file in the same folder
+end note
+
+note right of DataGetter::getdata
+    download and extract the file (composition)
+end note
+
+Downloader <|-- HTMLDownloader
+Extractor <|-- TGZExtractor
+DataGetter *--> Extractor: extract
+DataGetter *--> Downloader: download
+
+@enduml
