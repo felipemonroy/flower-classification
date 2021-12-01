@@ -1,0 +1,17 @@
+temp:
+  path: data/temp
+
+train: 
+  path: data/train
+
+test:
+  path: data/test
+
+validation:
+  path: data/validation
+
+predict:
+  path: data/predict
+
+raw:
+  path: data/raw

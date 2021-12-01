@@ -1,0 +1,9 @@
+download_data:
+  url: https://www.robots.ox.ac.uk/~vgg/data/flowers/17/17flowers.tgz
+  keep: false
+  format: .jpg
+
+download_labels:
+  url: https://docs.google.com/spreadsheets/d/1g51A7Ahr-hGfZZAknb2z59D4oYhtvUCqiO3k2JOqy00/gviz/tq?tqx=out:csv&sheet=labels
+  keep: false
+  name: labels.csv
