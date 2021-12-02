@@ -27,6 +27,7 @@ class Catalog(DriConfig):
         config_file_name = "catalog.yml"
         allow_mutation = False
 
+    data: Source
     raw: Source
     train: Source
     temp: Source

@@ -24,31 +24,50 @@ SOFTWARE.
 
 import argparse
 
+import splitfolders
+
 from src.catalog import Catalog
 from src.download import DataGetter, HTMLDownloader, TGZExtractor
 from src.parameters import Parameters
+from src.split import label_data
 
 
 def main(arguments: argparse.Namespace):
     """Main function."""
 
-    catalog = Catalog()
-    params = Parameters()
+    if arguments.download:
 
-    # Get image data
-    downloader = HTMLDownloader(params.download_data.url, catalog.temp.path)
-    extractor = TGZExtractor(
-        downloader.path, catalog.raw.path, extension=params.download_data.extension
-    )
-    data_getter = DataGetter(downloader, extractor)
-    data_getter.get_data()
+        catalog = Catalog()
+        params = Parameters()
 
-    # Get label data
-    downloader = HTMLDownloader(
-        params.download_labels.url, catalog.raw.path, params.download_labels.name
-    )
-    data_getter = DataGetter(downloader)
-    data_getter.get_data()
+        # Get image data
+        downloader_img = HTMLDownloader(params.download_data.url, catalog.temp.path)
+        extractor_img = TGZExtractor(
+            downloader_img.path,
+            catalog.temp.path,
+            extension=params.download_data.extension,
+        )
+        data_getter = DataGetter(downloader_img, extractor_img)
+        data_getter.get_data()
+
+        # Get label data
+        downloader_labels = HTMLDownloader(
+            params.download_labels.url, catalog.temp.path, params.download_labels.name
+        )
+        data_getter = DataGetter(downloader_labels)
+        data_getter.get_data()
+
+        # Organise the images
+        label_data(downloader_labels.path, catalog.temp.path, catalog.raw.path)
+
+        # Split the images
+        splitfolders.ratio(
+            catalog.raw.path,
+            output=catalog.data.path,
+            seed=params.split.seed,
+            ratio=params.split.ratio,
+            group_prefix=None,
+        )
 
 
 def str2bool(value: str) -> bool:
