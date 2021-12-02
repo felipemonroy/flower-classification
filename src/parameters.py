@@ -2,7 +2,7 @@
 Class for catalog.
 """
 
-from typing import Optional
+from typing import List, Optional
 
 from driconfig import DriConfig
 from pydantic import BaseModel
@@ -17,7 +17,19 @@ class Download(BaseModel):
     name: Optional[str] = None
 
     class Config:
-        """Configuring BaseModel"""
+        """Configuring BaseModel."""
+
+        allow_mutation = False
+
+
+class Split(BaseModel):
+    """Model for Splot config."""
+
+    seed: int
+    ratio: List[float]
+
+    class Config:
+        """Configuring BaseModel."""
 
         allow_mutation = False
 
@@ -34,3 +46,4 @@ class Parameters(DriConfig):
 
     download_data: Download
     download_labels: Download
+    split: Split
