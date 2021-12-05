@@ -1,6 +1,9 @@
+import logging
 import os
 import shutil
 from csv import DictReader
+
+logger = logging.getLogger("default")
 
 
 def label_data(
@@ -11,6 +14,9 @@ def label_data(
     """
     Divide the images into different folders depending on their label.
     """
+
+    logger.info("Labelling data...")
+
     with open(labels_path, "r", encoding="utf-8") as read_obj:
         csv_dict_reader = DictReader(read_obj)
 
