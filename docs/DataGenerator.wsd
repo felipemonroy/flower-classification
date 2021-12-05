@@ -1,0 +1,58 @@
+@startuml
+
+class Sequence{
+    + Integer batch_size
+    - {abstract} __getitem__() 
+    - {abstract} __len__()
+    - __on_epoch_end__()
+    - __iter__()
+}
+
+class DataGenerator{
+    + np.array x
+    + np.array y
+    + Integer batch_size
+    + List[Transformation] transformations
+    - np.array transform()
+    - np.array __getitem__()
+    - Integer __len__()
+}
+
+
+abstract class Transformation{
+    + {abstract} np.array transform()
+}
+
+class Crop{
+    - tupple size
+    - bool center
+    - Integer seed
+    + {abstract} np.array transform()
+}
+
+class Resize{
+    - tupple size
+    + {abstract} np.array transform()
+}
+
+class Rotate{
+    - Integer rotation_range
+    + {abstract} np.array transform()
+}
+
+class Flip{
+    + {abstract} np.array transform()
+}
+
+Sequence <|-- DataGenerator
+DataGenerator o--> Transformation
+Transformation <|-- Crop
+Transformation <|-- Resize
+Transformation <|-- Rotate
+Transformation <|-- Flip
+
+
+@enduml
+
+
+

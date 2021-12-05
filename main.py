@@ -23,44 +23,62 @@ SOFTWARE.
 """
 
 import argparse
+import logging
+import logging.config
 
 import splitfolders
+import yaml
 
 from src.catalog import Catalog
-from src.download import DataGetter, HTMLDownloader, TGZExtractor
+from src.download import html_download, tgz_extract
 from src.parameters import Parameters
 from src.split import label_data
+
+with open("config/logging.yml", "rt", encoding="utf-8") as file:
+    config = yaml.safe_load(file.read())
+    logging.config.dictConfig(config)
+
+logger = logging.getLogger("default")
 
 
 def main(arguments: argparse.Namespace):
     """Main function."""
 
+    logger.info("Loading configuration...")
+
+    catalog = Catalog()
+    params = Parameters()
+
     if arguments.download:
 
-        catalog = Catalog()
-        params = Parameters()
+        logger.info("Getting data...")
 
         # Get image data
-        downloader_img = HTMLDownloader(params.download_data.url, catalog.temp.path)
-        extractor_img = TGZExtractor(
-            downloader_img.path,
-            catalog.temp.path,
+        compressed_file = html_download(
+            url=params.download_data.url, destination=catalog.temp.path
+        )
+        tgz_extract(
+            source=compressed_file,
+            destination=catalog.temp.path,
             extension=params.download_data.extension,
         )
-        data_getter = DataGetter(downloader_img, extractor_img)
-        data_getter.get_data()
 
         # Get label data
-        downloader_labels = HTMLDownloader(
-            params.download_labels.url, catalog.temp.path, params.download_labels.name
+        labels_file = html_download(
+            url=params.download_labels.url,
+            destination=catalog.temp.path,
+            name=params.download_labels.name,
         )
-        data_getter = DataGetter(downloader_labels)
-        data_getter.get_data()
 
         # Organise the images
-        label_data(downloader_labels.path, catalog.temp.path, catalog.raw.path)
+        label_data(
+            labels_path=labels_file,
+            img_path=catalog.temp.path,
+            output_path=catalog.raw.path,
+        )
 
         # Split the images
+        logger.info("Splitting images...")
         splitfolders.ratio(
             catalog.raw.path,
             output=catalog.data.path,
@@ -68,6 +86,12 @@ def main(arguments: argparse.Namespace):
             ratio=params.split.ratio,
             group_prefix=None,
         )
+
+    if arguments.train:
+        pass
+
+    if arguments.predict:
+        pass
 
 
 def str2bool(value: str) -> bool:
